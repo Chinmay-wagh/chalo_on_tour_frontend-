@@ -286,14 +286,14 @@ function ReceiptPdfDocument({ invoice }) {
       id="receipt-pdf-document"
       style={{
         width: '210mm',
-        minHeight: '297mm',
+        height: '297mm', // Strict page height
         margin: '0 auto',
         background: '#fff',
         color: '#1e293b',
-        padding: '20mm 15mm',
+        padding: '12mm 15mm', // Reduced top/bottom padding
         fontFamily: "'Inter', 'Segoe UI', Roboto, sans-serif",
-        fontSize: '10pt',
-        lineHeight: 1.5,
+        fontSize: '9.5pt', // Slightly smaller base font
+        lineHeight: 1.4, // Tighter line height
         boxSizing: 'border-box',
         position: 'relative',
         overflow: 'hidden'
@@ -322,17 +322,17 @@ function ReceiptPdfDocument({ invoice }) {
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Header Section */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
-          <div style={{ width: '280px' }}>
-            <img src={receiptLogoSrc} alt="Chalo On Tour" style={{ width: '100%', display: 'block', marginBottom: '8px' }} />
-            <div style={{ padding: '4px 12px', background: primaryColor, color: '#fff', fontSize: '8pt', fontWeight: 800, borderRadius: '4px', textAlign: 'center', letterSpacing: '1.5px', display: 'inline-block' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '25px' }}>
+          <div style={{ width: '220px' }}> {/* Slightly smaller logo container */}
+            <img src={receiptLogoSrc} alt="Chalo On Tour" style={{ width: '100%', display: 'block', marginBottom: '6px' }} />
+            <div style={{ padding: '3px 10px', background: primaryColor, color: '#fff', fontSize: '7pt', fontWeight: 800, borderRadius: '4px', textAlign: 'center', letterSpacing: '1.2px', display: 'inline-block' }}>
               THE FUTURE OF TRAVEL
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <h1 style={{ margin: 0, fontSize: '32pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase', letterSpacing: '-1px', lineHeight: 0.8 }}>Receipt</h1>
-            <div style={{ marginTop: '15px' }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', color: '#64748b' }}>
+            <h1 style={{ margin: 0, fontSize: '28pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase', letterSpacing: '-1px', lineHeight: 0.8 }}>Receipt</h1>
+            <div style={{ marginTop: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', color: '#64748b', fontSize: '9pt' }}>
                 <div><span style={{ fontWeight: 600, color: '#1e293b' }}>Receipt No:</span> {invoice?.receiptNumber || '--'}</div>
                 <div><span style={{ fontWeight: 600, color: '#1e293b' }}>Date:</span> {formatDisplayDate(invoice?.receiptDate)}</div>
               </div>
@@ -341,27 +341,27 @@ function ReceiptPdfDocument({ invoice }) {
         </div>
 
         {/* Address & Bill To Bar */}
-        <div style={{ display: 'flex', gap: '30px', marginBottom: '35px', padding: '20px', background: lightBg, borderRadius: '12px', border: `1px solid ${borderColor}` }}>
+        <div style={{ display: 'flex', gap: '30px', marginBottom: '25px', padding: '15px', background: lightBg, borderRadius: '12px', border: `1px solid ${borderColor}` }}>
           <div style={{ flex: 1 }}>
-            <h3 style={{ fontSize: '8pt', color: accentColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.5px' }}>From</h3>
-            <p style={{ margin: 0, fontWeight: 800, fontSize: '11pt', color: primaryColor }}>Chalo On Tour</p>
-            <p style={{ margin: '5px 0', color: '#475569', fontSize: '9pt', lineHeight: 1.4 }}>
+            <h3 style={{ fontSize: '7.5pt', color: accentColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.5px' }}>From</h3>
+            <p style={{ margin: 0, fontWeight: 800, fontSize: '10.5pt', color: primaryColor }}>Chalo On Tour</p>
+            <p style={{ margin: '4px 0', color: '#475569', fontSize: '8.5pt', lineHeight: 1.3 }}>
               Near Police Station, Ghodegaon,<br />
               Tal- Ambegaon, Dist Pune. 412 408
             </p>
-            <p style={{ margin: '5px 0 0 0', fontSize: '9pt' }}><strong>Tel:</strong> {customerContacts || '+91 97676 13498'}</p>
+            <p style={{ margin: '4px 0 0 0', fontSize: '8.5pt' }}><strong>Tel:</strong> {customerContacts || '+91 97676 13498'}</p>
           </div>
           
           <div style={{ width: '1px', background: borderColor }}></div>
 
           <div style={{ flex: 1 }}>
-            <h3 style={{ fontSize: '8pt', color: accentColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '0.5px' }}>Bill To</h3>
-            <p style={{ margin: 0, fontWeight: 800, fontSize: '11pt', color: primaryColor }}>{invoice?.customerName || '--'}</p>
-            <p style={{ margin: '5px 0', color: '#475569', fontSize: '9pt', whiteSpace: 'pre-line' }}>
+            <h3 style={{ fontSize: '7.5pt', color: accentColor, fontWeight: 800, textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.5px' }}>Bill To</h3>
+            <p style={{ margin: 0, fontWeight: 800, fontSize: '10.5pt', color: primaryColor }}>{invoice?.customerName || '--'}</p>
+            <p style={{ margin: '4px 0', color: '#475569', fontSize: '8.5pt', whiteSpace: 'pre-line', lineHeight: 1.3 }}>
               {invoice?.address || '--'}
             </p>
             {(invoice?.email || invoice?.contactNumbers?.[0]) && (
-              <p style={{ margin: '5px 0 0 0', fontSize: '9pt' }}>
+              <p style={{ margin: '4px 0 0 0', fontSize: '8.5pt' }}>
                 {invoice?.email && <span><strong>Email:</strong> {invoice.email}</span>}
                 {invoice?.email && invoice?.contactNumbers?.[0] && <span> | </span>}
                 {invoice?.contactNumbers?.[0] && <span><strong>Ph:</strong> {invoice.contactNumbers[0]}</span>}
@@ -371,18 +371,18 @@ function ReceiptPdfDocument({ invoice }) {
         </div>
 
         {/* Tour Highlights */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.2fr', gap: '20px', marginBottom: '30px' }}>
-          <div style={{ padding: '12px 15px', border: `1px solid ${borderColor}`, borderRadius: '8px' }}>
-            <span style={{ display: 'block', fontSize: '7.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Tour Destination</span>
-            <span style={{ fontWeight: 800, color: primaryColor, fontSize: '11pt' }}>{invoice?.tourName || '--'}</span>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.2fr', gap: '15px', marginBottom: '20px' }}>
+          <div style={{ padding: '8px 12px', border: `1px solid ${borderColor}`, borderRadius: '8px' }}>
+            <span style={{ display: 'block', fontSize: '7pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Tour Destination</span>
+            <span style={{ fontWeight: 800, color: primaryColor, fontSize: '10pt' }}>{invoice?.tourName || '--'}</span>
           </div>
-          <div style={{ padding: '12px 15px', border: `1px solid ${borderColor}`, borderRadius: '8px' }}>
-            <span style={{ display: 'block', fontSize: '7.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Duration</span>
-            <span style={{ fontWeight: 700, fontSize: '11pt' }}>{invoice?.tourDuration || '--'}</span>
+          <div style={{ padding: '8px 12px', border: `1px solid ${borderColor}`, borderRadius: '8px' }}>
+            <span style={{ display: 'block', fontSize: '7pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Duration</span>
+            <span style={{ fontWeight: 700, fontSize: '10pt' }}>{invoice?.tourDuration || '--'}</span>
           </div>
-          <div style={{ padding: '12px 15px', border: `1px solid ${borderColor}`, borderRadius: '8px' }}>
-            <span style={{ display: 'block', fontSize: '7.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Passengers</span>
-            <span style={{ fontWeight: 700, fontSize: '11pt' }}>
+          <div style={{ padding: '8px 12px', border: `1px solid ${borderColor}`, borderRadius: '8px' }}>
+            <span style={{ display: 'block', fontSize: '7pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Passengers</span>
+            <span style={{ fontWeight: 700, fontSize: '10pt' }}>
               {invoice?.numberOfPersons || 0} Adult{toNumber(invoice?.numberOfPersons) !== 1 ? 's' : ''}
               {toNumber(invoice?.kidsCount) > 0 ? ` + ${invoice.kidsCount} Child` : ''}
             </span>
@@ -390,46 +390,46 @@ function ReceiptPdfDocument({ invoice }) {
         </div>
 
         {/* Table Content */}
-        <div style={{ borderRadius: '12px', overflow: 'hidden', border: `1px solid ${borderColor}`, marginBottom: '30px' }}>
+        <div style={{ borderRadius: '12px', overflow: 'hidden', border: `1px solid ${borderColor}`, marginBottom: '20px' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: primaryColor, color: '#fff' }}>
-                <th style={{ padding: '14px 15px', textAlign: 'left', fontWeight: 700, fontSize: '9pt', textTransform: 'uppercase' }}>Service Description</th>
-                <th style={{ padding: '14px 15px', textAlign: 'center', fontWeight: 700, fontSize: '9pt', textTransform: 'uppercase', width: '100px' }}>Rate</th>
-                <th style={{ padding: '14px 15px', textAlign: 'center', fontWeight: 700, fontSize: '9pt', textTransform: 'uppercase', width: '80px' }}>Qty</th>
-                <th style={{ padding: '14px 15px', textAlign: 'right', fontWeight: 700, fontSize: '9pt', textTransform: 'uppercase', width: '120px' }}>Total</th>
+                <th style={{ padding: '10px 15px', textAlign: 'left', fontWeight: 700, fontSize: '8.5pt', textTransform: 'uppercase' }}>Service Description</th>
+                <th style={{ padding: '10px 15px', textAlign: 'center', fontWeight: 700, fontSize: '8.5pt', textTransform: 'uppercase', width: '100px' }}>Rate</th>
+                <th style={{ padding: '10px 15px', textAlign: 'center', fontWeight: 700, fontSize: '8.5pt', textTransform: 'uppercase', width: '80px' }}>Qty</th>
+                <th style={{ padding: '10px 15px', textAlign: 'right', fontWeight: 700, fontSize: '8.5pt', textTransform: 'uppercase', width: '110px' }}>Total</th>
               </tr>
             </thead>
             <tbody>
               <tr style={{ borderBottom: `1px solid ${borderColor}` }}>
-                <td style={{ padding: '15px' }}>
-                  <div style={{ fontWeight: 700, fontSize: '10.5pt' }}>{invoice?.tourName || 'Tour Package'}</div>
-                  <div style={{ fontSize: '8.5pt', color: '#64748b', marginTop: '4px' }}>Main Adult Package / Inclusion Details</div>
+                <td style={{ padding: '12px 15px' }}>
+                  <div style={{ fontWeight: 700, fontSize: '10pt' }}>{invoice?.tourName || 'Tour Package'}</div>
+                  <div style={{ fontSize: '7.5pt', color: '#64748b', marginTop: '2px' }}>Main Adult Package / Inclusion Details</div>
                 </td>
-                <td style={{ padding: '15px', textAlign: 'center' }}>{formatCurrency(invoice?.pricePerPerson)}</td>
-                <td style={{ padding: '15px', textAlign: 'center' }}>{invoice?.numberOfPersons}</td>
-                <td style={{ padding: '15px', textAlign: 'right', fontWeight: 700 }}>{formatCurrency(toNumber(invoice?.pricePerPerson) * toNumber(invoice?.numberOfPersons))}</td>
+                <td style={{ padding: '12px 15px', textAlign: 'center', fontSize: '9pt' }}>{formatCurrency(invoice?.pricePerPerson)}</td>
+                <td style={{ padding: '12px 15px', textAlign: 'center', fontSize: '9pt' }}>{invoice?.numberOfPersons}</td>
+                <td style={{ padding: '12px 15px', textAlign: 'right', fontWeight: 700, fontSize: '9pt' }}>{formatCurrency(toNumber(invoice?.pricePerPerson) * toNumber(invoice?.numberOfPersons))}</td>
               </tr>
               {toNumber(invoice?.kidsCount) > 0 && (
                 <tr style={{ borderBottom: `1px solid ${borderColor}` }}>
-                  <td style={{ padding: '15px' }}>
-                    <div style={{ fontWeight: 700, fontSize: '10.5pt' }}>Child Tour Package</div>
-                    <div style={{ fontSize: '8.5pt', color: '#64748b', marginTop: '2px' }}>Junior Pack</div>
+                  <td style={{ padding: '12px 15px' }}>
+                    <div style={{ fontWeight: 700, fontSize: '10pt' }}>Child Tour Package</div>
+                    <div style={{ fontSize: '7.5pt', color: '#64748b', marginTop: '1px' }}>Junior Pack</div>
                   </td>
-                  <td style={{ padding: '15px', textAlign: 'center' }}>{formatCurrency(invoice?.kidsPricePerPerson)}</td>
-                  <td style={{ padding: '15px', textAlign: 'center' }}>{invoice?.kidsCount}</td>
-                  <td style={{ padding: '15px', textAlign: 'right', fontWeight: 700 }}>{formatCurrency(toNumber(invoice?.kidsPricePerPerson) * toNumber(invoice?.kidsCount))}</td>
+                  <td style={{ padding: '12px 15px', textAlign: 'center', fontSize: '9pt' }}>{formatCurrency(invoice?.kidsPricePerPerson)}</td>
+                  <td style={{ padding: '12px 15px', textAlign: 'center', fontSize: '9pt' }}>{invoice?.kidsCount}</td>
+                  <td style={{ padding: '12px 15px', textAlign: 'right', fontWeight: 700, fontSize: '9pt' }}>{formatCurrency(toNumber(invoice?.kidsPricePerPerson) * toNumber(invoice?.kidsCount))}</td>
                 </tr>
               )}
               
               {/* Passenger List Row */}
               <tr style={{ background: '#f8fafc' }}>
-                <td colSpan={4} style={{ padding: '10px 15px' }}>
-                  <div style={{ fontSize: '8pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>Passenger List</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 20px' }}>
+                <td colSpan={4} style={{ padding: '8px 15px' }}>
+                  <div style={{ fontSize: '7pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Passenger List</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 15px' }}>
                     {(invoice?.touristNames || []).filter(Boolean).map((name, idx) => (
-                      <div key={idx} style={{ fontSize: '9pt', color: '#475569' }}>
-                        <span style={{ fontWeight: 700, color: '#94a3b8', marginRight: '4px' }}>{String(idx + 1).padStart(2, '0')}.</span> {name}
+                      <div key={idx} style={{ fontSize: '8.5pt', color: '#475569' }}>
+                        <span style={{ fontWeight: 700, color: '#94a3b8', marginRight: '3px' }}>{String(idx + 1).padStart(2, '0')}.</span> {name}
                       </div>
                     ))}
                   </div>
@@ -440,27 +440,27 @@ function ReceiptPdfDocument({ invoice }) {
         </div>
 
         {/* Bottom Section */}
-        <div style={{ display: 'flex', gap: '40px', marginBottom: '30px' }}>
+        <div style={{ display: 'flex', gap: '30px', marginBottom: '20px' }}>
           {/* Detailed Calculations & Terms */}
           <div style={{ flex: 1.3 }}>
-            <div style={{ padding: '20px', borderRadius: '12px', background: lightBg, border: `1px solid ${borderColor}`, height: '100%', boxSizing: 'border-box' }}>
-              <h4 style={{ margin: '0 0 15px 0', fontSize: '9pt', color: primaryColor, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Payment Details</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            <div style={{ padding: '15px', borderRadius: '12px', background: lightBg, border: `1px solid ${borderColor}`, height: '100%', boxSizing: 'border-box' }}>
+              <h4 style={{ margin: '0 0 10px 0', fontSize: '8pt', color: primaryColor, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.5px' }}>Payment Details</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div>
-                  <div style={{ fontSize: '7.5pt', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Amount Received</div>
-                  <div style={{ fontSize: '11pt', fontWeight: 700, color: '#16a34a' }}>{formatCurrency(amountReceived)}</div>
+                  <div style={{ fontSize: '7pt', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Amount Received</div>
+                  <div style={{ fontSize: '10.5pt', fontWeight: 700, color: '#16a34a' }}>{formatCurrency(amountReceived)}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '7.5pt', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Method</div>
-                  <div style={{ fontSize: '11pt', fontWeight: 700 }}>{invoice?.paymentMethod || 'UPI'}</div>
+                  <div style={{ fontSize: '7pt', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Method</div>
+                  <div style={{ fontSize: '10.5pt', fontWeight: 700 }}>{invoice?.paymentMethod || 'UPI'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '7.5pt', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Transaction ID</div>
-                  <div style={{ fontSize: '10pt', fontFamily: 'monospace', color: '#475569' }}>{invoice?.transactionId || '--'}</div>
+                  <div style={{ fontSize: '7pt', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Transaction ID</div>
+                  <div style={{ fontSize: '9pt', fontFamily: 'monospace', color: '#475569' }}>{invoice?.transactionId || '--'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '7.5pt', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Receipt Date</div>
-                  <div style={{ fontSize: '10pt', fontWeight: 600 }}>{formatDisplayDate(invoice?.receiptDate)}</div>
+                  <div style={{ fontSize: '7pt', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Receipt Date</div>
+                  <div style={{ fontSize: '9pt', fontWeight: 600 }}>{formatDisplayDate(invoice?.receiptDate)}</div>
                 </div>
               </div>
             </div>
@@ -468,58 +468,56 @@ function ReceiptPdfDocument({ invoice }) {
 
           {/* Totals & Signatory */}
           <div style={{ flex: 1 }}>
-            <div style={{ borderRadius: '12px', background: lightBg, border: `1px solid ${borderColor}`, padding: '20px', color: primaryColor }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', opacity: 0.7, fontSize: '9pt', fontWeight: 600 }}>
+            <div style={{ borderRadius: '12px', background: lightBg, border: `1px solid ${borderColor}`, padding: '15px', color: primaryColor }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', opacity: 0.7, fontSize: '8.5pt', fontWeight: 600 }}>
                 <span>Subtotal</span>
                 <span>{formatCurrency(totalAmount)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', color: '#16a34a', fontSize: '9pt', fontWeight: 700 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', color: '#16a34a', fontSize: '8.5pt', fontWeight: 700 }}>
                 <span>Advance Received</span>
                 <span>- {formatCurrency(amountReceived)}</span>
               </div>
-              <div style={{ height: '1px', background: borderColor, marginBottom: '15px' }}></div>
+              <div style={{ height: '1px', background: borderColor, marginBottom: '10px' }}></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '10pt', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Balance Payable</span>
-                <span style={{ fontSize: '18pt', fontWeight: 900 }}>{formatCurrency(balanceDue)}</span>
+                <span style={{ fontSize: '9pt', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Balance Payable</span>
+                <span style={{ fontSize: '16pt', fontWeight: 900 }}>{formatCurrency(balanceDue)}</span>
               </div>
             </div>
 
             {invoice?.balanceAmountPayableDate && (
-              <div style={{ marginTop: '12px', textAlign: 'right', fontSize: '9pt', fontWeight: 700, color: accentColor }}>
+              <div style={{ marginTop: '8px', textAlign: 'right', fontSize: '8.5pt', fontWeight: 700, color: accentColor }}>
                 Balance Amount Payable Date: {formatDisplayDate(invoice.balanceAmountPayableDate)}
               </div>
             )}
           </div>
         </div>
-
         {/* Signatory & T&C Row */}
-        <div style={{ display: 'flex', gap: '40px', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
             <div style={{ flex: 1.3 }}>
-                <div style={{ padding: '0 0 10px 0' }}>
-                    <h5 style={{ margin: '0 0 10px 0', fontSize: '9pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Terms & Conditions:</h5>
-                    <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: '8.5pt', color: '#64748b', lineHeight: 1.6 }}>
-                        <li style={{ marginBottom: '6px', display: 'flex', gap: '10px' }}>
-                            <span style={{ color: accentColor, fontSize: '10pt' }}>•</span>
-                            <span>This is a computer-generated document. Digital signature is active.</span>
+                <div style={{ padding: '0' }}>
+                    <h5 style={{ margin: '0 0 8px 0', fontSize: '8.5pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Terms & Conditions:</h5>
+                    <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: '8pt', color: '#64748b', lineHeight: 1.5 }}>
+                        <li style={{ marginBottom: '4px', display: 'flex', gap: '8px' }}>
+                            <span style={{ color: accentColor, fontSize: '9pt' }}>•</span>
+                            <span>Computer-generated. Digital signature active.</span>
                         </li>
-                        <li style={{ marginBottom: '6px', display: 'flex', gap: '10px' }}>
-                            <span style={{ color: accentColor, fontSize: '10pt' }}>•</span>
-                            <span>Valid ID proof (Aadhar/Voter ID) is mandatory for all guests.</span>
+                        <li style={{ marginBottom: '4px', display: 'flex', gap: '8px' }}>
+                            <span style={{ color: accentColor, fontSize: '9pt' }}>•</span>
+                            <span>ID proof (Aadhar/Voter ID) mandatory for all guests.</span>
                         </li>
-                        <li style={{ marginBottom: '6px', display: 'flex', gap: '10px' }}>
-                            <span style={{ color: accentColor, fontSize: '10pt' }}>•</span>
-                            <span>Payment is non-refundable after the specified cancellation period.</span>
+                        <li style={{ marginBottom: '4px', display: 'flex', gap: '8px' }}>
+                            <span style={{ color: accentColor, fontSize: '9pt' }}>•</span>
+                            <span>Non-refundable after specified cancellation period.</span>
                         </li>
                     </ul>
                 </div>
             </div>
-
             <div style={{ flex: 1 }}>
                 {/* Authorised Signatory Section */}
-                <div style={{ marginTop: '-10px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px', height: '90px', marginBottom: '5px' }}>
+                <div style={{ marginTop: '-20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', height: '70px', marginBottom: '5px' }}>
                         {/* Stamp */}
-                        <div style={{ width: '90px', height: '90px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ width: '70px', height: '70px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <img 
                                 src="/stamp-sign.png" 
                                 alt="Official Stamp" 
@@ -527,11 +525,10 @@ function ReceiptPdfDocument({ invoice }) {
                                 onError={(e) => { e.target.style.display = 'none'; }}
                             />
                         </div>
-                        
                         {/* Signature Side */}
-                        <div style={{ width: '110px', height: '90px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div style={{ width: '90px', height: '70px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <div className="signature-text" style={{ 
-                                fontSize: '20pt', 
+                                fontSize: '18pt', 
                                 color: primaryColor, 
                                 opacity: 0.9, 
                                 transform: 'rotate(-5deg)',
@@ -541,25 +538,23 @@ function ReceiptPdfDocument({ invoice }) {
                             </div>
                         </div>
                     </div>
-                    
                     <div style={{ textAlign: 'center' }}>
-                        <div style={{ height: '2px', background: primaryColor, width: '100%', marginBottom: '5px', opacity: 0.2 }}></div>
-                        <div style={{ fontSize: '9pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase' }}>Mr. Utkarsh Kale</div>
-                        <div style={{ fontSize: '7pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1.5px' }}>Authorized Signatory</div>
+                        <div style={{ height: '1.5px', background: primaryColor, width: '100%', marginBottom: '4px', opacity: 0.2 }}></div>
+                        <div style={{ fontSize: '8pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase' }}>Mr. Utkarsh Kale</div>
+                        <div style={{ fontSize: '6.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1.2px' }}>Authorized Signatory</div>
                     </div>
                 </div>
             </div>
         </div>
-
         {/* Footer */}
-        <div style={{ marginTop: '50px', textAlign: 'center' }}>
-          <div style={{ padding: '15px 40px', border: `1px solid ${borderColor}`, borderRadius: '100px', display: 'inline-block', background: '#fff', color: primaryColor, fontWeight: 900, fontSize: '12pt', textTransform: 'uppercase', letterSpacing: '2px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
+        <div style={{ marginTop: '25px', textAlign: 'center' }}>
+          <div style={{ padding: '10px 30px', border: `1px solid ${borderColor}`, borderRadius: '100px', display: 'inline-block', background: '#fff', color: primaryColor, fontWeight: 900, fontSize: '10pt', textTransform: 'uppercase', letterSpacing: '1.5px', boxShadow: '0 2px 4px -1px rgb(0 0 0 / 0.1)' }}>
             Thank You For Your Business!
           </div>
-          <div style={{ marginTop: '40px', fontSize: '8pt', color: '#94a3b8', borderTop: `1px solid ${borderColor}`, paddingTop: '20px' }}>
+          <div style={{ marginTop: '20px', fontSize: '7.5pt', color: '#94a3b8', borderTop: `1px solid ${borderColor}`, paddingTop: '15px' }}>
             <p style={{ margin: 0, fontWeight: 700, color: primaryColor, textTransform: 'uppercase' }}>Chalo On Tour - The Future of Travel</p>
-            <p style={{ margin: '4px 0' }}>Registered Office: Near Police Station, Ghodegaon, Tal- Ambegaon, Dist Pune | www.chaloontour.com</p>
-            <p style={{ margin: '15px 0 0 0', fontStyle: 'italic', opacity: 0.5 }}>*** This is a system-generated document. Digital Verification Active. ***</p>
+            <p style={{ margin: '3px 0' }}>Near Police Station, Ghodegaon, Tal- Ambegaon, Dist Pune | www.chaloontour.com</p>
+            <p style={{ margin: '8px 0 0 0', fontStyle: 'italic', opacity: 0.5 }}>*** This is a system-generated document. Digital Verification Active. ***</p>
           </div>
         </div>
       </div>
