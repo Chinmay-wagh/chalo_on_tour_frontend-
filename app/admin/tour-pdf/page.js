@@ -364,7 +364,7 @@ export default function TourPDFPage() {
 
     if (isExport) {
         return (
-            <div className="bg-white min-h-screen">
+            <div id="pdf-document" className="bg-white min-h-screen">
                 <TourPDFDocument data={data} pdfMode={true} />
             </div>
         );
