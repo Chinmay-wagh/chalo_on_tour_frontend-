@@ -286,14 +286,14 @@ function ReceiptPdfDocument({ invoice }) {
       id="receipt-pdf-document"
       style={{
         width: '210mm',
-        height: '297mm', // Strict page height
+        height: '296.8mm', // Slightly under 297mm to prevent empty 2nd page
         margin: '0 auto',
         background: '#fff',
         color: '#1e293b',
-        padding: '12mm 15mm', // Reduced top/bottom padding
+        padding: '12mm 15mm 10mm 15mm', // Tighter bottom padding
         fontFamily: "'Inter', 'Segoe UI', Roboto, sans-serif",
-        fontSize: '9.5pt', // Slightly smaller base font
-        lineHeight: 1.4, // Tighter line height
+        fontSize: '9.5pt',
+        lineHeight: 1.4,
         boxSizing: 'border-box',
         position: 'relative',
         overflow: 'hidden'
@@ -330,8 +330,8 @@ function ReceiptPdfDocument({ invoice }) {
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <h1 style={{ margin: 0, fontSize: '28pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase', letterSpacing: '-1px', lineHeight: 0.8 }}>Receipt</h1>
-            <div style={{ marginTop: '10px' }}>
+            <h1 style={{ margin: 0, fontSize: '22pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', letterSpacing: '2px', lineHeight: 1 }}>Receipt</h1>
+            <div style={{ marginTop: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', color: '#64748b', fontSize: '9pt' }}>
                 <div><span style={{ fontWeight: 600, color: '#1e293b' }}>Receipt No:</span> {invoice?.receiptNumber || '--'}</div>
                 <div><span style={{ fontWeight: 600, color: '#1e293b' }}>Date:</span> {formatDisplayDate(invoice?.receiptDate)}</div>
@@ -491,67 +491,46 @@ function ReceiptPdfDocument({ invoice }) {
             )}
           </div>
         </div>
-        {/* Signatory & T&C Row */}
-        <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
-            <div style={{ flex: 1.3 }}>
-                <div style={{ padding: '0' }}>
-                    <h5 style={{ margin: '0 0 8px 0', fontSize: '8.5pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Terms & Conditions:</h5>
-                    <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: '8pt', color: '#64748b', lineHeight: 1.5 }}>
-                        <li style={{ marginBottom: '4px', display: 'flex', gap: '8px' }}>
-                            <span style={{ color: accentColor, fontSize: '9pt' }}>•</span>
-                            <span>Computer-generated. Digital signature active.</span>
-                        </li>
-                        <li style={{ marginBottom: '4px', display: 'flex', gap: '8px' }}>
-                            <span style={{ color: accentColor, fontSize: '9pt' }}>•</span>
-                            <span>ID proof (Aadhar/Voter ID) mandatory for all guests.</span>
-                        </li>
-                        <li style={{ marginBottom: '4px', display: 'flex', gap: '8px' }}>
-                            <span style={{ color: accentColor, fontSize: '9pt' }}>•</span>
-                            <span>Non-refundable after specified cancellation period.</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div style={{ flex: 1 }}>
+        {/* Bottom Area: Centered Signatory */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+            <div style={{ width: '250px' }}>
                 {/* Authorised Signatory Section */}
-                <div style={{ marginTop: '-20px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', height: '70px', marginBottom: '5px' }}>
-                        {/* Stamp */}
-                        <div style={{ width: '70px', height: '70px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <img 
-                                src="/stamp-sign.png" 
-                                alt="Official Stamp" 
-                                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', opacity: 0.9 }} 
-                                onError={(e) => { e.target.style.display = 'none'; }}
-                            />
-                        </div>
-                        {/* Signature Side */}
-                        <div style={{ width: '90px', height: '70px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <div className="signature-text" style={{ 
-                                fontSize: '18pt', 
-                                color: primaryColor, 
-                                opacity: 0.9, 
-                                transform: 'rotate(-5deg)',
-                                whiteSpace: 'nowrap'
-                            }}>
-                                Utkarsh Kale
-                            </div>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', height: '80px', marginBottom: '5px' }}>
+                    {/* Stamp */}
+                    <div style={{ width: '80px', height: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <img 
+                            src="/stamp-sign.png" 
+                            alt="Official Stamp" 
+                            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', opacity: 0.9 }} 
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                    </div>
+                    {/* Signature Side */}
+                    <div style={{ width: '100px', height: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <div className="signature-text" style={{ 
+                            fontSize: '18pt', 
+                            color: primaryColor, 
+                            opacity: 0.9, 
+                            transform: 'rotate(-5deg)',
+                            whiteSpace: 'nowrap'
+                        }}>
+                            Utkarsh Kale
                         </div>
                     </div>
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ height: '1.5px', background: primaryColor, width: '100%', marginBottom: '4px', opacity: 0.2 }}></div>
-                        <div style={{ fontSize: '8pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase' }}>Mr. Utkarsh Kale</div>
-                        <div style={{ fontSize: '6.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1.2px' }}>Authorized Signatory</div>
-                    </div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ height: '1.5px', background: primaryColor, width: '100%', marginBottom: '4px', opacity: 0.2 }}></div>
+                    <div style={{ fontSize: '8.5pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase' }}>Mr. Utkarsh Kale</div>
+                    <div style={{ fontSize: '6.5pt', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1.2px' }}>Authorized Signatory</div>
                 </div>
             </div>
         </div>
         {/* Footer */}
-        <div style={{ marginTop: '25px', textAlign: 'center' }}>
-          <div style={{ padding: '10px 30px', border: `1px solid ${borderColor}`, borderRadius: '100px', display: 'inline-block', background: '#fff', color: primaryColor, fontWeight: 900, fontSize: '10pt', textTransform: 'uppercase', letterSpacing: '1.5px', boxShadow: '0 2px 4px -1px rgb(0 0 0 / 0.1)' }}>
+        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <div style={{ padding: '8px 25px', border: `1px solid ${borderColor}`, borderRadius: '100px', display: 'inline-block', background: '#fff', color: primaryColor, fontWeight: 900, fontSize: '9pt', textTransform: 'uppercase', letterSpacing: '1.5px', boxShadow: '0 2px 4px -1px rgb(0 0 0 / 0.1)' }}>
             Thank You For Your Business!
           </div>
-          <div style={{ marginTop: '20px', fontSize: '7.5pt', color: '#94a3b8', borderTop: `1px solid ${borderColor}`, paddingTop: '15px' }}>
+          <div style={{ marginTop: '15px', fontSize: '7.5pt', color: '#94a3b8', borderTop: `1px solid ${borderColor}`, paddingTop: '12px' }}>
             <p style={{ margin: 0, fontWeight: 700, color: primaryColor, textTransform: 'uppercase' }}>Chalo On Tour - The Future of Travel</p>
             <p style={{ margin: '3px 0' }}>Near Police Station, Ghodegaon, Tal- Ambegaon, Dist Pune | www.chaloontour.com</p>
             <p style={{ margin: '8px 0 0 0', fontStyle: 'italic', opacity: 0.5 }}>*** This is a system-generated document. Digital Verification Active. ***</p>
