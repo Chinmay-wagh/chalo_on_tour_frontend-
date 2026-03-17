@@ -92,15 +92,14 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
             {/* ── PAGE 1: COVER ── */}
             <section style={{ 
               width: '210mm', 
-              minHeight: '297mm', // Keep cover as a full page
-              padding: '12mm 15mm', 
+              minHeight: 'auto', 
+              padding: '10mm 15mm', 
               boxSizing: 'border-box', 
               background: '#fff',
               position: 'relative',
               overflow: 'hidden',
               display: 'flex',
-              flexDirection: 'column',
-              breakAfter: 'page' // Force new page after cover
+              flexDirection: 'column'
             }}>
                 {/* Watermark Logo */}
                 <div style={{
@@ -116,7 +115,7 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
                     <img src="/Chalo-on-tour.jpg.jpeg" alt="" style={{ width: '100%' }} />
                 </div>
 
-                <div style={{ position: 'relative', zIndex: 1, flex: 1 }}>
+                <div style={{ position: 'relative', zIndex: 1 }}>
                     {/* Header Section */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
                         <div style={{ width: '280px' }}>
@@ -126,7 +125,7 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
                             </div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                            <h1 style={{ margin: 0, fontSize: '26pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase', letterSpacing: '-1px', lineHeight: 1 }}>Tour<br/>Quotation</h1>
+                            <h1 style={{ margin: 0, fontSize: '18pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.2 }}>Tour<br/>Details</h1>
                         </div>
                     </div>
 
@@ -202,7 +201,7 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
                     Accommodation Details
                 </h3>
                 
-                <div style={{ borderRadius: '12px', overflow: 'hidden', border: `1px solid ${borderColor}`, marginBottom: '15px' }}>
+                <div style={{ borderRadius: '12px', overflow: 'hidden', border: `1px solid ${borderColor}`, marginBottom: '15px', breakInside: 'avoid' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ background: primaryColor, color: '#fff' }}>
@@ -237,7 +236,7 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
                         <h3 style={{ fontSize: '18pt', fontWeight: 900, color: primaryColor, marginBottom: '12px', borderBottom: `2px solid ${accentColor}`, paddingBottom: '6px', display: 'inline-block', marginTop: '10px' }}>
                             Flight Itinerary
                         </h3>
-                        <div style={{ borderRadius: '12px', overflow: 'hidden', border: `1px solid ${borderColor}`, marginBottom: '12px' }}>
+                        <div style={{ borderRadius: '12px', overflow: 'hidden', border: `1px solid ${borderColor}`, marginBottom: '12px', breakInside: 'avoid' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                 <thead>
                                     <tr style={{ background: '#f1f5f9' }}>
@@ -284,7 +283,7 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
                 </h3>
 
                 {allItinerary.map((day, di) => (
-                    <div key={di} className="itinerary-day" style={{ marginBottom: '15px', borderLeft: `3px solid ${di % 2 === 0 ? primaryColor : borderColor}`, paddingLeft: '20px' }}>
+                    <div key={di} className="itinerary-day" style={{ marginBottom: '15px', borderLeft: `3px solid ${di % 2 === 0 ? primaryColor : borderColor}`, paddingLeft: '20px', breakInside: 'avoid' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                             <div style={{ background: primaryColor, color: '#fff', padding: '4px 12px', borderRadius: '50px', fontSize: '9pt', fontWeight: 800 }}>
                                 {day.dayLabel || `DAY ${di + 1}`}
@@ -320,8 +319,8 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
                 display: 'flex', 
                 flexDirection: 'column' 
             }}>
-                <div style={{ flex: 1 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '15px' }}>
+                <div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '15px', breakInside: 'avoid' }}>
                         {inclusionItems.length > 0 && (
                             <div>
                                 <h4 style={{ fontSize: '11pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', marginBottom: '15px' }}>Package Inclusions</h4>
@@ -344,7 +343,7 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
                         )}
                     </div>
 
-                    <div style={{ background: lightBg, padding: '15px 25px', borderRadius: '15px', border: `1px solid ${borderColor}`, marginBottom: '15px' }}>
+                    <div style={{ background: lightBg, padding: '15px 25px', borderRadius: '15px', border: `1px solid ${borderColor}`, marginBottom: '15px', breakInside: 'avoid' }}>
                         <h4 style={{ fontSize: '11pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', marginBottom: '15px' }}>Terms & Policies</h4>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                             <div>
@@ -368,30 +367,13 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
 
                 {/* SIGNATOR & CONTACT */}
                 <div style={{ borderTop: `1px solid ${borderColor}`, paddingTop: '20px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                        <div style={{ flex: 1.5 }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                        <div style={{ flex: 1 }}>
                             <div style={{ fontWeight: 800, fontSize: '13pt', color: primaryColor, marginBottom: '3px' }}>CHALO ON TOUR</div>
                             <div style={{ fontSize: '10pt', fontWeight: 800, marginBottom: '6px' }}>{ceoName || 'Mr. Utkarsh Kale (C.E.O.)'}</div>
                             <div style={{ fontSize: '9pt', color: '#475569', marginBottom: '2px' }}><strong>Ph:</strong> {cell1} / {cell2}</div>
                             <div style={{ fontSize: '9pt', color: '#475569', marginBottom: '2px' }}><strong>Email:</strong> {companyEmail}</div>
                             <div style={{ fontSize: '9pt', color: '#475569' }}><strong>Web:</strong> {companyWebsite}</div>
-                        </div>
-
-                        <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', height: '100px', marginBottom: '10px' }}>
-                                <div style={{ width: '100px', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <img src="/stamp-sign.png" alt="Stamp" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', opacity: 0.9 }} onError={(e) => { e.target.style.display = 'none'; }} />
-                                </div>
-                                <div style={{ width: '110px', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <div className="signature-text" style={{ fontSize: '20pt', color: primaryColor, opacity: 0.9, transform: 'rotate(-5deg)', whiteSpace: 'nowrap' }}>
-                                        Utkarsh Kale
-                                    </div>
-                                </div>
-                            </div>
-                            <div style={{ textAlign: 'center' }}>
-                                <div style={{ height: '2px', background: primaryColor, width: '100%', marginBottom: '5px', opacity: 0.2 }}></div>
-                                <div style={{ fontSize: '8pt', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px' }}>Authorised Signatory</div>
-                            </div>
                         </div>
                     </div>
 

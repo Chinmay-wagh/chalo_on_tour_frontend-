@@ -612,12 +612,12 @@ export default function TourPDFPage() {
                     <div>
                         <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                             <FileText className="h-5 w-5 text-blue-600" />
-                            Tour PDF Generator
+                            Tour Details Generator
                         </h1>
                         <p className="text-sm text-gray-500 mt-0.5">
                             {leadId
                                 ? (loadingLeadData ? 'Loading selected lead into preview...' : 'Previewing the selected lead. You can download PDF, download Word, or print.')
-                                : 'Fill in the tour details and download a professional quotation PDF.'}
+                                : 'Fill in the tour details and download a professional tour details PDF.'}
                         </p>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
