@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Edit, MapPin, Building2, Route, CheckCircle, XCircle, FileDown, CreditCard, AlertCircle, Plane, Banknote, ImagePlus, Car } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { X, Edit, MapPin, Building2, Route, CheckCircle, XCircle, FileText, FileDown, CreditCard, AlertCircle, Plane, Banknote, ImagePlus, Car } from 'lucide-react';
 import { api } from '../../lib/api';
 import toast from 'react-hot-toast';
 
@@ -31,100 +32,16 @@ function formatDate(value) {
 }
 
 export default function LeadDetailsModal({ open, lead, onClose, onEdit, canEdit }) {
+  const router = useRouter();
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [downloadingWord, setDownloadingWord] = useState(false);
 
-  const handleDownloadPdf = async () => {
+  const handleGoToPdfEditor = () => {
     if (!lead?._id) return;
-    setDownloadingPdf(true);
-    try {
-      const res = await api.get(`/leads/${lead._id}/tour-summary-pdf`, { responseType: 'blob' });
-      const data = res.data;
-      const contentType = res.headers?.['content-type'] || '';
-      const isPdf = contentType.includes('application/pdf');
-      const hasSize = data instanceof Blob && data.size > 100;
-      if (!isPdf || !hasSize) {
-        const text = await (data instanceof Blob ? data.text() : Promise.resolve(String(data)));
-        let msg = 'PDF download failed.';
-        try {
-          const j = JSON.parse(text);
-          msg = j.message || msg;
-        } catch (_) {}
-        toast.error(msg);
-        return;
-      }
-      const url = window.URL.createObjectURL(new Blob([data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `tour-summary-${lead.leadId || lead._id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      toast.success('PDF downloaded.');
-    } catch (err) {
-      const data = err.response?.data;
-      if (data instanceof Blob) {
-        try {
-          const text = await data.text();
-          const j = JSON.parse(text);
-          toast.error(j.message || 'Failed to download PDF.');
-        } catch (_) {
-          toast.error('Failed to download PDF.');
-        }
-      } else {
-        toast.error(err.response?.data?.message || 'Failed to download PDF.');
-      }
-    } finally {
-      setDownloadingPdf(false);
-    }
+    router.push(`/admin/tour-pdf?leadId=${encodeURIComponent(lead._id)}&preview=1`);
+    onClose();
   };
 
-  const handleDownloadWord = async () => {
-    if (!lead?._id) return;
-    setDownloadingWord(true);
-    try {
-      const res = await api.get(`/leads/${lead._id}/tour-summary-word`, { responseType: 'blob' });
-      const data = res.data;
-      const contentType = res.headers?.['content-type'] || '';
-      const isWord = contentType.includes('application/msword');
-      const hasSize = data instanceof Blob && data.size > 100;
-      if (!isWord || !hasSize) {
-        const text = await (data instanceof Blob ? data.text() : Promise.resolve(String(data)));
-        let msg = 'Word download failed.';
-        try {
-          const j = JSON.parse(text);
-          msg = j.message || msg;
-        } catch (_) {}
-        toast.error(msg);
-        return;
-      }
-      const url = window.URL.createObjectURL(new Blob([data], { type: 'application/msword' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `tour-summary-${lead.leadId || lead._id}.doc`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      toast.success('Word file downloaded.');
-    } catch (err) {
-      const data = err.response?.data;
-      if (data instanceof Blob) {
-        try {
-          const text = await data.text();
-          const j = JSON.parse(text);
-          toast.error(j.message || 'Failed to download Word file.');
-        } catch (_) {
-          toast.error('Failed to download Word file.');
-        }
-      } else {
-        toast.error(err.response?.data?.message || 'Failed to download Word file.');
-      }
-    } finally {
-      setDownloadingWord(false);
-    }
-  };
 
   if (!open) return null;
 
@@ -147,13 +64,9 @@ export default function LeadDetailsModal({ open, lead, onClose, onEdit, canEdit 
         <div className="flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-primary-600 to-primary-700">
           <h2 className="text-xl font-bold text-white">Lead Details – {name}</h2>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={handleDownloadPdf} disabled={downloadingPdf} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm font-medium transition-colors disabled:opacity-60" title="Download Tour Summary PDF">
-              <FileDown className="h-4 w-4" />
-              {downloadingPdf ? 'Downloading…' : 'PDF'}
-            </button>
-            <button type="button" onClick={handleDownloadWord} disabled={downloadingWord} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm font-medium transition-colors disabled:opacity-60" title="Download Tour Summary Word File">
-              <FileDown className="h-4 w-4" />
-              {downloadingWord ? 'Downloading…' : 'Word'}
+            <button type="button" onClick={handleGoToPdfEditor} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm font-medium transition-colors" title="Open Tour PDF/Word Generator">
+              <FileText className="h-4 w-4" />
+              Generator
             </button>
             {canEdit && (
               <button type="button" onClick={() => onEdit?.(lead)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm font-medium transition-colors">

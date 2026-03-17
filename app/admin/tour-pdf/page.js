@@ -364,7 +364,7 @@ export default function TourPDFPage() {
 
     if (isExport) {
         return (
-            <div id="pdf-document" className="bg-white min-h-screen">
+            <div className="bg-white min-h-screen">
                 <TourPDFDocument data={data} pdfMode={true} />
             </div>
         );
@@ -561,7 +561,29 @@ export default function TourPDFPage() {
             toast.success('PDF Downloaded!', { id: toastId });
         } catch (error) {
             console.error('Download Error:', error);
-            toast.error('Failed to generate PDF. Please try again.', { id: toastId });
+            let msg = 'Failed to generate PDF. Please try again.';
+            
+            // If response is a blob (due to responseType: 'blob'), we need to parse it to get the JSON error
+            const data = error.response?.data;
+            if (data instanceof Blob && (data.type.includes('application/json') || data.type === '')) {
+                try {
+                    const text = await data.text();
+                    const json = JSON.parse(text);
+                    msg = json.message || msg;
+                    if (json.details || json.error) {
+                        console.error('PDF Backend Error:', json.error);
+                        console.error('PDF Backend Details:', json.details);
+                    }
+                } catch (e) {
+                    console.error('Failed to parse error blob:', e);
+                }
+            } else if (data && typeof data === 'object') {
+                msg = data.message || msg;
+            } else {
+                msg = error.message || msg;
+            }
+            
+            toast.error(msg, { id: toastId });
         }
     };
 

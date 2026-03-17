@@ -283,7 +283,7 @@ function ReceiptPdfDocument({ invoice }) {
 
   return (
     <div
-      id="receipt-pdf-document"
+      id="pdf-document"
       style={{
         width: '210mm',
         height: '296.8mm', // Slightly under 297mm to prevent empty 2nd page
@@ -302,7 +302,7 @@ function ReceiptPdfDocument({ invoice }) {
       {/* Google Fonts Import */}
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Dancing+Script:wght@700&display=swap');
-        #receipt-pdf-document { font-family: 'Inter', sans-serif !important; }
+        #pdf-document { font-family: 'Inter', sans-serif !important; }
         .signature-text { font-family: 'Dancing Script', cursive !important; }
       `}} />
 
@@ -323,7 +323,7 @@ function ReceiptPdfDocument({ invoice }) {
       <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Header Section */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '25px' }}>
-          <div style={{ width: '250px' }}>
+          <div style={{ width: '320px' }}>
             <img src={receiptLogoSrc} alt="Chalo On Tour" style={{ width: '100%', display: 'block' }} />
           </div>
           <div style={{ textAlign: 'right' }}>
@@ -531,8 +531,8 @@ function ReceiptPdfDocument({ invoice }) {
             <p style={{ margin: '3px 0' }}>Near Police Station, Ghodegaon, Tal- Ambegaon, Dist Pune | www.chaloontour.com</p>
             <p style={{ margin: '8px 0 0 0', fontStyle: 'italic', opacity: 0.5 }}>*** This is a system-generated document. Digital Verification Active. ***</p>
           </div>
-        </div>
       </div>
+    </div>
   );
 }
 
@@ -789,7 +789,7 @@ export default function InvoicesPage() {
       }
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      const pdfEl = mountNode.querySelector('#receipt-pdf-document');
+      const pdfEl = mountNode.querySelector('#pdf-document');
       if (!pdfEl) {
         throw new Error('Receipt PDF content not ready.');
       }

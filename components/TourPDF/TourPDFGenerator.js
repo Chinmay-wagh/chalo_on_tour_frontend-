@@ -74,7 +74,7 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
         <div 
           className={`${styles.pdfRoot} ${pdfMode ? styles.pdfMode : ''} pdf-root-print`} 
           ref={ref} 
-          id="pdf-document"
+          id={pdfMode ? "pdf-document" : undefined}
           style={{
             fontFamily: "'Inter', sans-serif",
             color: '#1e293b',
