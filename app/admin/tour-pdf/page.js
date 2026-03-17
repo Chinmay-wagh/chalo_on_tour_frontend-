@@ -147,6 +147,15 @@ const mapLeadToTourPdfData = (lead) => {
         ? lead.destinations.join(', ')
         : (lead?.destination || '');
 
+    // Helper to get full URL for trip images
+    const getTripImg = (img) => {
+        if (!img) return '';
+        if (img.startsWith('data:') || img.startsWith('http')) return img;
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+        const base = apiUrl.replace(/\/api\/?$/, '');
+        return `${base}/uploads/${img.startsWith('/') ? img.slice(1) : img}`;
+    };
+
     return {
         ...base,
         quoteNumber: lead?.leadId || '',
@@ -164,9 +173,9 @@ const mapLeadToTourPdfData = (lead) => {
         pickupPoint: lead?.pickupPoint || '',
         dropPoint: lead?.dropPoint || '',
         destinations,
-        heroMain: images[0] || '',
-        heroSub1: images[1] || '',
-        heroSub2: images[2] || '',
+        heroMain: getTripImg(images[0]),
+        heroSub1: getTripImg(images[1]),
+        heroSub2: getTripImg(images[2]),
         hotels: Array.isArray(lead?.accommodation)
             ? lead.accommodation.map((hotel) => ({
                 name: hotel?.hotelName || '',
@@ -341,7 +350,16 @@ export default function TourPDFPage() {
             }
         };
 
+        // SAFETY FALLBACK: If images or fonts take too long, signal ready anyway after 5s
+        const fallbackTimer = setTimeout(() => {
+            if (!window.RENDER_COMPLETE) {
+                window.RENDER_COMPLETE = true;
+                console.warn('RENDER_COMPLETE - Fallback triggered after 5s');
+            }
+        }, 5000);
+
         waitForRender();
+        return () => clearTimeout(fallbackTimer);
     }, [isExport, loadingLeadData, data]);
 
     if (isExport) {
