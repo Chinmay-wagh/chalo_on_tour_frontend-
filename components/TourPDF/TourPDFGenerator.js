@@ -117,15 +117,15 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
 
                 <div style={{ position: 'relative', zIndex: 1 }}>
                     {/* Header Section */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
-                        <div style={{ width: '280px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px' }}>
+                        <div style={{ width: '280px', marginBottom: '20px', textAlign: 'center' }}>
                             <img src="/Chalo-on-tour.jpg.jpeg" alt="Chalo On Tour" style={{ width: '100%', display: 'block', marginBottom: '8px' }} />
                             <div style={{ padding: '4px 12px', background: primaryColor, color: '#fff', fontSize: '8pt', fontWeight: 800, borderRadius: '4px', textAlign: 'center', letterSpacing: '1.5px', display: 'inline-block' }}>
                                 THE FUTURE OF TRAVEL
                             </div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                            <h1 style={{ margin: 0, fontSize: '18pt', fontWeight: 900, color: primaryColor, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.2 }}>Tour<br/>Details</h1>
+                        <div style={{ textAlign: 'center', borderTop: `1px solid ${borderColor}`, borderBottom: `1px solid ${borderColor}`, padding: '10px 0', width: '100%' }}>
+                            <h1 style={{ margin: 0, fontSize: '15pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', letterSpacing: '2px' }}>Tour Details</h1>
                         </div>
                     </div>
 
