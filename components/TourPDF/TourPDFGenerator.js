@@ -4,19 +4,16 @@ import Image from 'next/image';
 import { forwardRef } from 'react';
 import styles from './TourPDF.module.css';
 
-const FingerPointIcon = () => (
-    <svg viewBox="0 0 24 24" fill="#c62828" className={styles.bulletIcon} width="16" height="16">
-        <path d="M21,7.24a3,3,0,0,0-5.64-1.41l-3.32,6.64A3,3,0,1,1,6.72,9.72L12,4.44l1.41,1.41-5.28,5.28a1,1,0,1,0,1.41,1.41l5.29-5.29A3,3,0,0,1,21,7.24Z" />
-        <path d="M18,13a1,1,0,0,1-1-1V8.5a1,1,0,0,1,2,0V12A1,1,0,0,1,18,13Z" />
-        <path d="M15,14a1,1,0,0,1-1-1V10.5a1,1,0,0,1,2,0V13A1,1,0,0,1,15,14Z" />
-        <path d="M12,15a1,1,0,0,1-1-1V12.5a1,1,0,0,1,2,0V14A1,1,0,0,1,12,15Z" />
+const BulletIcon = () => (
+    <svg viewBox="0 0 24 24" className={styles.bulletIcon} width="16" height="16">
+        <path d="M4 12h12.17l-3.28-3.29c-.39-.39-.39-1.02 0-1.41a.9959.9959 0 0 1 1.41 0l5 5c.39.39.39 1.02 0 1.41l-5 5a.9959.9959 0 0 1-1.41 0c-.39-.39-.39-1.02 0-1.41L16.17 13H4c-.55 0-1-.45-1-1s.45-1 1-1z" fill="#c62828" />
     </svg>
 );
 
 const getListItems = (value) =>
     String(value || '')
         .split(/\r?\n/)
-        .map((item) => item.replace(/^[\s•\-]+/, '').trim())
+        .map((item) => item.replace(/^[\s•\-*➳]+/, '').trim())
         .filter(Boolean);
 
 const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPreview = false, pdfMode = false }, ref) {
@@ -58,331 +55,359 @@ const TourPDFDocument = forwardRef(function TourPDFDocument({ data, compactPrevi
     const paymentPolicyItems = getListItems(paymentPolicy);
     const cancellationPolicyItems = getListItems(cancellationPolicy);
     const termsItems = getListItems(termsAndConditions);
-    const uploadedImages = [heroMain, heroSub1, heroSub2].filter(Boolean);
     const allItinerary = Array.isArray(itinerary) ? itinerary : [];
     
-    const primaryColor = '#1e3a8a'; // Deep Navy
-    const accentColor = '#ef4444'; // Red from logo
-    const lightBg = '#f8fafc';
-    const borderColor = '#cbd5e1';
-
     const tripTitle = destinations?.trim()
         ? `Let's Explore ${destinations}`
         : "Let's Explore Your Trip";
+
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return dateStr;
+            return date.toLocaleDateString('en-GB'); // DD/MM/YYYY
+        } catch (e) {
+            return dateStr;
+        }
+    };
+
+    const tourDateRange = tourDateFrom && tourDateTo 
+        ? `${formatDate(tourDateFrom)} to ${formatDate(tourDateTo)}`
+        : tourDateFrom ? formatDate(tourDateFrom) : '--';
 
     return (
         <div 
           className={`${styles.pdfRoot} ${pdfMode ? styles.pdfMode : ''} pdf-root-print`} 
           ref={ref} 
           id={pdfMode ? "pdf-document" : undefined}
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            color: '#1e293b',
-            lineHeight: 1.5
-          }}
         >
-            {/* Google Fonts Import */}
             <style dangerouslySetInnerHTML={{ __html: `
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Dancing+Script:wght@700&display=swap');
-                .pdf-root-print { font-family: 'Inter', sans-serif !important; }
-                .signature-text { font-family: 'Dancing Script', cursive !important; }
-                .itinerary-day { break-inside: avoid; margin-bottom: 20px; }
+                .pdf-root-print table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                .pdf-root-print th, .pdf-root-print td { border: 1px solid #000; padding: 10px 12px; }
+                 @media print {
+                    .pdf-root-print { width: 210mm !important; }
+                }
             `}} />
 
-            {/* ── PAGE 1: COVER ── */}
-            <section style={{ 
-              width: '210mm', 
-              minHeight: 'auto', 
-              padding: '10mm 15mm', 
-              boxSizing: 'border-box', 
-              background: '#fff',
-              position: 'relative',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column'
-            }}>
-                {/* Watermark Logo */}
-                <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%) rotate(-30deg)',
-                    opacity: 0.03,
-                    width: '500px',
-                    zIndex: 0,
-                    pointerEvents: 'none'
-                }}>
-                    <img src="/Chalo-on-tour.jpg.jpeg" alt="" style={{ width: '100%' }} />
+            <div className={styles.watermark}>
+                <img src="/Chalo-on-tour.jpg.jpeg" alt="" style={{ width: '400px' }} />
+            </div>
+
+            {/* Header */}
+            <div className={styles.header}>
+                <div className={styles.logoBox}>
+                    <img src="/Chalo-on-tour.jpg.jpeg" alt="Chalo On Tour" className={styles.logoImg} />
                 </div>
+                <h1 className={styles.mainTitle}>{tripTitle}</h1>
+            </div>
 
-                <div style={{ position: 'relative', zIndex: 1 }}>
-                    {/* Header Section */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '40px' }}>
-                        <div style={{ width: '280px', marginBottom: '20px', textAlign: 'center' }}>
-                            <img src="/Chalo-on-tour.jpg.jpeg" alt="Chalo On Tour" style={{ width: '100%', display: 'block', marginBottom: '8px' }} />
-                            <div style={{ padding: '4px 12px', background: primaryColor, color: '#fff', fontSize: '8pt', fontWeight: 800, borderRadius: '4px', textAlign: 'center', letterSpacing: '1.5px', display: 'inline-block' }}>
-                                THE FUTURE OF TRAVEL
-                            </div>
-                        </div>
-                        <div style={{ textAlign: 'center', borderTop: `1px solid ${borderColor}`, borderBottom: `1px solid ${borderColor}`, padding: '10px 0', width: '100%' }}>
-                            <h1 style={{ margin: 0, fontSize: '15pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', letterSpacing: '2px' }}>Tour Details</h1>
-                        </div>
+            {/* Images Section */}
+            <div className={styles.imageSection}>
+                <div className={styles.mainImageWrap}>
+                    <img src={heroMain || "/Chalo-on-tour.jpg.jpeg"} className={styles.fullImg} alt="Main" />
+                </div>
+                <div className={styles.subImagesGrid}>
+                    <div className={styles.subImageWrap}>
+                        <img src={heroSub1 || "/Chalo-on-tour.jpg.jpeg"} className={styles.fullImg} alt="Sub 1" />
                     </div>
-
-                    <h2 style={{ fontSize: '28pt', fontWeight: 900, color: '#000', margin: '25px 0 20px', borderLeft: `6px solid ${accentColor}`, paddingLeft: '20px', lineHeight: 1.1 }}>
-                        {tripTitle}
-                    </h2>
-
-                    {/* Image Showcase */}
-                    {uploadedImages.length > 0 && (
-                        <div style={{ marginBottom: '25px' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: uploadedImages.length > 1 ? '1.5fr 1fr' : '1fr', gap: '15px' }}>
-                                <div style={{ height: '350px', borderRadius: '15px', overflow: 'hidden', border: `1px solid ${borderColor}` }}>
-                                    <img src={uploadedImages[0]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Main" />
-                                </div>
-                                {uploadedImages.length > 1 && (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                        <div style={{ flex: 1, borderRadius: '15px', overflow: 'hidden', border: `1px solid ${borderColor}` }}>
-                                            <img src={uploadedImages[1]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Sub 1" />
-                                        </div>
-                                        {uploadedImages.length > 2 && (
-                                            <div style={{ flex: 1, borderRadius: '15px', overflow: 'hidden', border: `1px solid ${borderColor}` }}>
-                                                <img src={uploadedImages[2]} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Sub 2" />
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Summary Bar */}
-                    <div style={{ background: lightBg, color: primaryColor, padding: '18px 25px', borderRadius: '15px', border: `1px solid ${borderColor}`, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '18px' }}>
-                        <div>
-                            <div style={{ fontSize: '7pt', opacity: 0.7, textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Cost Per Person</div>
-                            <div style={{ fontSize: '12pt', fontWeight: 800 }}>{perPersonCost ? `₹ ${Number(perPersonCost).toLocaleString('en-IN')}` : '--'}</div>
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '7pt', opacity: 0.7, textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Duration</div>
-                            <div style={{ fontSize: '12pt', fontWeight: 800 }}>{tourDuration || '--'}</div>
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '7pt', opacity: 0.7, textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Pax Count</div>
-                            <div style={{ fontSize: '12pt', fontWeight: 800 }}>{totalPax || '--'}</div>
-                        </div>
-                        <div>
-                            <div style={{ fontSize: '7pt', opacity: 0.7, textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>Meal Plan</div>
-                            <div style={{ fontSize: '12pt', fontWeight: 800 }}>{mealPlan || '--'}</div>
-                        </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                        <div style={{ padding: '15px', border: `1px solid ${borderColor}`, borderRadius: '10px' }}>
-                            <span style={{ fontSize: '7pt', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Vehicle Preference</span>
-                            <div style={{ fontWeight: 700, marginTop: '2px' }}>{vehicleType || '--'}</div>
-                        </div>
-                        <div style={{ padding: '15px', border: `1px solid ${borderColor}`, borderRadius: '10px' }}>
-                            <span style={{ fontSize: '7pt', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Hotel Class</span>
-                            <div style={{ fontWeight: 700, marginTop: '2px' }}>{hotelCategory || '--'}</div>
-                        </div>
+                    <div className={styles.subImageWrap}>
+                        <img src={heroSub2 || "/Chalo-on-tour.jpg.jpeg"} className={styles.fullImg} alt="Sub 2" />
                     </div>
                 </div>
-            </section>
+            </div>
 
-            {/* ── SECTION 2: ACCOMMODATION & FLIGHTS ── */}
-            <section style={{ 
-                width: '210mm', 
-                minHeight: 'auto', 
-                padding: '10mm 15mm', 
-                boxSizing: 'border-box', 
-                background: '#fff'
-            }}>
-                <h3 style={{ fontSize: '18pt', fontWeight: 900, color: primaryColor, marginBottom: '12px', borderBottom: `2px solid ${accentColor}`, paddingBottom: '6px', display: 'inline-block' }}>
-                    Accommodation Details
-                </h3>
-                
-                <div style={{ borderRadius: '12px', overflow: 'hidden', border: `1px solid ${borderColor}`, marginBottom: '15px', breakInside: 'avoid' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            {/* TOUR SUMMARY */}
+            <div className={styles.sectionBlock}>
+                <table className={styles.tableHeader}>
+                    <tbody>
+                        <tr>
+                            <td style={{ background: '#1565c0' }}>
+                                <span className={styles.tableHeaderText}>TOUR SUMMARY: -</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table className={`${styles.table} ${styles.summaryTable}`}>
+                    <tbody>
+                        <tr>
+                            <td>01.</td>
+                            <td>Per Person Cost</td>
+                            <td>{perPersonCost ? `Rs. ${Number(perPersonCost).toLocaleString('en-IN')} /- Per Person` : '--'}</td>
+                        </tr>
+                        <tr>
+                            <td>02.</td>
+                            <td>Total No. of Pax</td>
+                            <td>{totalPax || '--'}</td>
+                        </tr>
+                        <tr>
+                            <td>03.</td>
+                            <td>Vehicle Type</td>
+                            <td>{vehicleType || '--'}</td>
+                        </tr>
+                        <tr>
+                            <td>04.</td>
+                            <td>Hotel Category</td>
+                            <td>{hotelCategory || '--'}</td>
+                        </tr>
+                        <tr>
+                            <td>05.</td>
+                            <td>Meal Plan</td>
+                            <td>{mealPlan || '--'}</td>
+                        </tr>
+                        <tr>
+                            <td>06.</td>
+                            <td>Tour Duration</td>
+                            <td>{tourDuration || '--'}</td>
+                        </tr>
+                        <tr>
+                            <td>07.</td>
+                            <td>Tour Date</td>
+                            <td>{tourDateRange}</td>
+                        </tr>
+                        <tr>
+                            <td>08.</td>
+                            <td>Pick up</td>
+                            <td>{pickupPoint || '--'}</td>
+                        </tr>
+                        <tr>
+                            <td>09.</td>
+                            <td>Drop</td>
+                            <td>{dropPoint || '--'}</td>
+                        </tr>
+                        <tr>
+                            <td>10.</td>
+                            <td>Destinations</td>
+                            <td>{destinations || '--'}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            {/* ACCOMMODATION */}
+            <div className={styles.sectionBlock}>
+                <table className={styles.tableHeader}>
+                    <tbody>
+                        <tr>
+                            <td style={{ background: '#1565c0' }}>
+                                <span className={styles.tableHeaderText}>ACCOMMODATION: -</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table className={`${styles.table} ${styles.accommodationTable}`}>
+                    <thead>
+                        <tr>
+                            <th>Sr.No</th>
+                            <th>Hotel Name</th>
+                            <th>No. of Nights</th>
+                            <th>Room Category</th>
+                            <th>Room Sharing</th>
+                            <th>Destination</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {hotels?.length > 0 ? hotels.map((h, i) => (
+                            <tr key={i}>
+                                <td style={{ textAlign: 'center' }}>{String(i + 1).padStart(2, '0')}.</td>
+                                <td>{h.name}</td>
+                                <td style={{ textAlign: 'center' }}>{h.nights} Nights</td>
+                                <td>{h.roomCategory}</td>
+                                <td>{h.roomSharing}</td>
+                                <td>{h.destination}</td>
+                            </tr>
+                        )) : (
+                            <tr><td colSpan="6" style={{ textAlign: 'center' }}>No accommodation listed</td></tr>
+                        )}
+                    </tbody>
+                </table>
+                {accommodationNote && <p style={{ fontSize: '9pt', fontStyle: 'italic', marginTop: '-15px', marginBottom: '15px' }}>* {accommodationNote}</p>}
+            </div>
+
+            {/* FLIGHT DETAILS */}
+            {flights?.length > 0 && (
+                <div className={styles.sectionBlock}>
+                    <table className={styles.tableHeader}>
+                        <tbody>
+                            <tr>
+                                <td style={{ background: '#1565c0' }}>
+                                    <span className={styles.tableHeaderText}>FLIGHT DETAILS: -</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table className={`${styles.table} ${styles.flightTable}`}>
                         <thead>
-                            <tr style={{ background: primaryColor, color: '#fff' }}>
-                                <th style={{ padding: '12px', textAlign: 'left', fontSize: '9pt' }}>Sr.</th>
-                                <th style={{ padding: '12px', textAlign: 'left', fontSize: '9pt' }}>Hotel Name</th>
-                                <th style={{ padding: '12px', textAlign: 'center', fontSize: '9pt' }}>Nights</th>
-                                <th style={{ padding: '12px', textAlign: 'left', fontSize: '9pt' }}>Category</th>
-                                <th style={{ padding: '12px', textAlign: 'left', fontSize: '9pt' }}>Type</th>
-                                <th style={{ padding: '12px', textAlign: 'left', fontSize: '9pt' }}>City</th>
+                            <tr>
+                                <th>Sr.No</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Airline</th>
+                                <th>PNR Details</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {hotels?.length > 0 ? hotels.map((h, i) => (
-                                <tr key={i} style={{ borderBottom: `1px solid ${borderColor}` }}>
-                                    <td style={{ padding: '12px', fontSize: '9pt', color: '#64748b' }}>{i + 1}</td>
-                                    <td style={{ padding: '12px', fontWeight: 700, fontSize: '10pt' }}>{h.name}</td>
-                                    <td style={{ padding: '12px', textAlign: 'center', fontSize: '9.5pt' }}>{h.nights}</td>
-                                    <td style={{ padding: '12px', fontSize: '9.5pt' }}>{h.roomCategory}</td>
-                                    <td style={{ padding: '12px', fontSize: '9.5pt' }}>{h.roomSharing}</td>
-                                    <td style={{ padding: '12px', fontSize: '9.5pt', fontWeight: 600 }}>{h.destination}</td>
+                            {flights.map((f, i) => (
+                                <tr key={i}>
+                                    <td style={{ textAlign: 'center' }}>{String(i + 1).padStart(2, '0')}.</td>
+                                    <td>{f.from}</td>
+                                    <td>{f.to}</td>
+                                    <td>{f.airline}</td>
+                                    <td>{f.pnr}</td>
                                 </tr>
-                            )) : (
-                                <tr><td colSpan="6" style={{ padding: '20px', textAlign: 'center', color: '#94a3b8' }}>No accommodation listed</td></tr>
-                            )}
+                            ))}
                         </tbody>
                     </table>
+                    {flightNote && <p style={{ fontSize: '9pt', fontStyle: 'italic', marginTop: '-15px', marginBottom: '15px' }}>* {flightNote}</p>}
                 </div>
-                {accommodationNote && <p style={{ fontSize: '8.5pt', color: '#64748b', fontStyle: 'italic', marginBottom: '15px' }}>* {accommodationNote}</p>}
+            )}
 
-                {flights?.length > 0 && (
-                    <>
-                        <h3 style={{ fontSize: '18pt', fontWeight: 900, color: primaryColor, marginBottom: '12px', borderBottom: `2px solid ${accentColor}`, paddingBottom: '6px', display: 'inline-block', marginTop: '10px' }}>
-                            Flight Itinerary
-                        </h3>
-                        <div style={{ borderRadius: '12px', overflow: 'hidden', border: `1px solid ${borderColor}`, marginBottom: '12px', breakInside: 'avoid' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <thead>
-                                    <tr style={{ background: '#f1f5f9' }}>
-                                        <th style={{ padding: '12px', textAlign: 'left', fontSize: '9pt', color: primaryColor }}>Route</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', fontSize: '9pt', color: primaryColor }}>Details</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', fontSize: '9pt', color: primaryColor }}>Airline</th>
-                                        <th style={{ padding: '12px', textAlign: 'center', fontSize: '9pt', color: primaryColor }}>PNR</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {flights.map((f, i) => (
-                                        <tr key={i} style={{ borderBottom: `1px solid ${borderColor}` }}>
-                                            <td style={{ padding: '12px' }}>
-                                                <div style={{ fontWeight: 700, fontSize: '10pt' }}>{f.from} → {f.to}</div>
-                                            </td>
-                                            <td style={{ padding: '12px', fontSize: '9pt', color: '#475569' }}>
-                                                {f.depDate} {f.depTime}
-                                            </td>
-                                            <td style={{ padding: '12px', fontSize: '9pt' }}>
-                                                <div style={{ fontWeight: 600 }}>{f.airline}</div>
-                                                <div style={{ fontSize: '8pt', opacity: 0.7 }}>{f.flightNo}</div>
-                                            </td>
-                                            <td style={{ padding: '12px', textAlign: 'center', fontWeight: 800, color: accentColor }}>{f.pnr}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        {flightNote && <p style={{ fontSize: '8.5pt', color: '#64748b', fontStyle: 'italic' }}>* {flightNote}</p>}
-                    </>
-                )}
-            </section>
-
-            {/* ── SECTION 3: ITINERARY ── */}
-            <section style={{ 
-                width: '210mm', 
-                minHeight: 'auto', 
-                padding: '10mm 15mm', 
-                boxSizing: 'border-box', 
-                background: '#fff' 
-            }}>
-                <h3 style={{ fontSize: '18pt', fontWeight: 900, color: primaryColor, marginBottom: '12px', borderBottom: `2px solid ${accentColor}`, paddingBottom: '6px', display: 'inline-block' }}>
-                    Days of Wonder
-                </h3>
+            {/* TOUR ITINERARY */}
+            <div className={styles.sectionBlock}>
+                <table className={styles.tableHeader}>
+                    <tbody>
+                        <tr>
+                            <td style={{ background: '#c62828' }}>
+                                <span className={styles.tableHeaderText}>TOUR ITINERARY: -</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
                 {allItinerary.map((day, di) => (
-                    <div key={di} className="itinerary-day" style={{ marginBottom: '15px', borderLeft: `3px solid ${di % 2 === 0 ? primaryColor : borderColor}`, paddingLeft: '20px', breakInside: 'avoid' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                            <div style={{ background: primaryColor, color: '#fff', padding: '4px 12px', borderRadius: '50px', fontSize: '9pt', fontWeight: 800 }}>
-                                {day.dayLabel || `DAY ${di + 1}`}
-                            </div>
-                            {day.date && <div style={{ fontSize: '9pt', color: '#64748b', fontWeight: 600 }}>{day.date}</div>}
+                    <div key={di} className="itinerary-day" style={{ marginBottom: '15px' }}>
+                        <table className={styles.dayTable}>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span className={styles.dayTableText}>
+                                            {day.dayLabel || `Day ${di + 1}`} :- {day.title} ({day.date || ''})
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div className={styles.itineraryContent}>
+                            <p style={{ marginTop: '10px' }}>{day.description}</p>
+                            {day.places?.length > 0 && (
+                                <>
+                                    <div className={styles.placesTitle}>Places to Visit: -</div>
+                                    <ul className={styles.placesList}>
+                                        {day.places.filter(Boolean).map((place, pi) => (
+                                            <li key={pi} className={styles.placeItem}>
+                                                <BulletIcon />
+                                                <span className={styles.placeText}>{place}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
                         </div>
-                        <h4 style={{ fontSize: '14pt', fontWeight: 800, color: '#0f172a', marginBottom: '10px' }}>{day.title}</h4>
-                        <p style={{ fontSize: '10pt', color: '#475569', lineHeight: 1.6, marginBottom: '15px' }}>{day.description}</p>
-                        
-                        {day.places?.length > 0 && (
-                            <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '10px' }}>
-                                <div style={{ fontSize: '8pt', fontWeight: 800, color: accentColor, textTransform: 'uppercase', marginBottom: '10px', letterSpacing: '1px' }}>Highlights:</div>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px' }}>
-                                    {day.places.filter(Boolean).map((place, pi) => (
-                                        <div key={pi} style={{ fontSize: '9pt', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: accentColor }}></div>
-                                          {place}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 ))}
-            </section>
+            </div>
 
-            <section style={{ 
-                width: '210mm', 
-                minHeight: 'auto', 
-                padding: '8mm 15mm', 
-                boxSizing: 'border-box', 
-                background: '#fff', 
-                display: 'flex', 
-                flexDirection: 'column' 
-            }}>
-                <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '15px', breakInside: 'avoid' }}>
-                        {inclusionItems.length > 0 && (
-                            <div>
-                                <h4 style={{ fontSize: '11pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', marginBottom: '15px' }}>Package Inclusions</h4>
-                                {inclusionItems.map((item, i) => (
-                                    <div key={i} style={{ fontSize: '9pt', color: '#445566', marginBottom: '8px', display: 'flex', gap: '10px' }}>
-                                        <span style={{ color: '#16a34a', fontWeight: 900 }}>✓</span> {item}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        {exclusionItems.length > 0 && (
-                            <div>
-                                <h4 style={{ fontSize: '11pt', fontWeight: 800, color: accentColor, textTransform: 'uppercase', marginBottom: '15px' }}>Package Exclusions</h4>
-                                {exclusionItems.map((item, i) => (
-                                    <div key={i} style={{ fontSize: '9pt', color: '#445566', marginBottom: '8px', display: 'flex', gap: '10px' }}>
-                                        <span style={{ color: accentColor, fontWeight: 900 }}>✕</span> {item}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+            {/* POLICIES & SECTIONS */}
+            <div className={styles.optionalSection}>
+                {inclusionItems.length > 0 && (
+                    <div>
+                        <div className={styles.optionalHeading}>Package Inclusions</div>
+                        <ul className={styles.optionalList}>
+                            {inclusionItems.map((item, i) => (
+                                <li key={i} className={styles.optionalListItem}>
+                                    <BulletIcon />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
+                )}
 
-                    <div style={{ background: lightBg, padding: '15px 25px', borderRadius: '15px', border: `1px solid ${borderColor}`, marginBottom: '15px', breakInside: 'avoid' }}>
-                        <h4 style={{ fontSize: '11pt', fontWeight: 800, color: primaryColor, textTransform: 'uppercase', marginBottom: '15px' }}>Terms & Policies</h4>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
-                            <div>
-                                <h5 style={{ fontSize: '8pt', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '10px' }}>Payment Schedule</h5>
-                                {paymentPolicyItems.map((item, i) => <p key={i} style={{ fontSize: '8.5pt', marginBottom: '5px' }}>• {item}</p>)}
-                            </div>
-                            <div>
-                                <h5 style={{ fontSize: '8pt', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '10px' }}>Cancellation Terms</h5>
-                                {cancellationPolicyItems.map((item, i) => <p key={i} style={{ fontSize: '8.5pt', marginBottom: '5px' }}>• {item}</p>)}
-                            </div>
-                        </div>
+                {exclusionItems.length > 0 && (
+                    <div style={{ marginTop: '15px' }}>
+                        <div className={styles.optionalHeading}>Package Exclusions</div>
+                        <ul className={styles.optionalList}>
+                            {exclusionItems.map((item, i) => (
+                                <li key={i} className={styles.optionalListItem}>
+                                    <BulletIcon />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
+                )}
 
-                    {memorableTrip && (
-                        <div style={{ background: '#fffef3', border: '1px solid #fde68a', padding: '15px', borderRadius: '12px', marginBottom: '25px' }}>
-                            <div style={{ fontWeight: 800, color: '#92400e', fontSize: '10pt', marginBottom: '5px' }}>Tip for a Memorable Trip:</div>
-                            <p style={{ fontSize: '9.5pt', color: '#78350f', margin: 0, lineHeight: 1.5 }}>{memorableTrip}</p>
-                        </div>
-                    )}
+                {paymentPolicyItems.length > 0 && (
+                    <div style={{ marginTop: '15px' }}>
+                        <div className={styles.optionalHeading}>Payment Policy</div>
+                        <ul className={styles.optionalList}>
+                            {paymentPolicyItems.map((item, i) => (
+                                <li key={i} className={styles.optionalListItem}>
+                                    <BulletIcon />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {cancellationPolicyItems.length > 0 && (
+                    <div style={{ marginTop: '15px' }}>
+                        <div className={styles.optionalHeading}>Cancellation Policy</div>
+                        <ul className={styles.optionalList}>
+                            {cancellationPolicyItems.map((item, i) => (
+                                <li key={i} className={styles.optionalListItem}>
+                                    <BulletIcon />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {termsItems.length > 0 && (
+                    <div style={{ marginTop: '15px' }}>
+                        <div className={styles.optionalHeading}>Terms And Conditions</div>
+                        <ul className={styles.optionalList}>
+                            {termsItems.map((item, i) => (
+                                <li key={i} className={styles.optionalListItem}>
+                                    <BulletIcon />
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
+
+            {memorableTrip && (
+                <div className={styles.memorableTripBox}>
+                    <div className={styles.memorableTripHeading}>Tip For Memorable Trip</div>
+                    <p className={styles.memorableTripText}>{memorableTrip}</p>
                 </div>
+            )}
 
-                {/* SIGNATOR & CONTACT */}
-                <div style={{ borderTop: `1px solid ${borderColor}`, paddingTop: '20px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
-                        <div style={{ flex: 1 }}>
-                            <div style={{ fontWeight: 800, fontSize: '13pt', color: primaryColor, marginBottom: '3px' }}>CHALO ON TOUR</div>
-                            <div style={{ fontSize: '10pt', fontWeight: 800, marginBottom: '6px' }}>{ceoName || 'Mr. Utkarsh Kale (C.E.O.)'}</div>
-                            <div style={{ fontSize: '9pt', color: '#475569', marginBottom: '2px' }}><strong>Ph:</strong> {cell1} / {cell2}</div>
-                            <div style={{ fontSize: '9pt', color: '#475569', marginBottom: '2px' }}><strong>Email:</strong> {companyEmail}</div>
-                            <div style={{ fontSize: '9pt', color: '#475569' }}><strong>Web:</strong> {companyWebsite}</div>
-                        </div>
-                    </div>
+            {/* Footer */}
+            <div className={styles.footer}>
+                <div className={styles.textBlue} style={{ fontSize: '13pt', marginBottom: '5px', fontWeight: 'bold' }}>Thank You</div>
+                <p className={styles.footerNote} style={{ fontSize: '10pt', color: '#444' }}>
+                    Let's stay connected via email, phone, WhatsApp, Facebook, Instagram, and more. We look forward to seeing you again on another memorable Chalo On Tour Trip.
+                </p>
 
-                    <div style={{ marginTop: '30px', textAlign: 'center', fontSize: '8pt', color: '#94a3b8' }}>
-                         Registered Office: Near Police Station, Ghodegaon, Tal- Ambegaon, Dist Pune | www.chaloontour.com
-                         <div style={{ marginTop: '6px', fontStyle: 'italic', opacity: 0.5 }}>*** This is a system-generated document. Digital Verification Active. ***</div>
+                <div className={styles.companyInfoFooter}>
+                    <div style={{ marginTop: '15px' }}>
+                        <div style={{ fontWeight: 'bold' }}>Thanks & Regards</div>
+                        <div className={styles.companyLink}>CHALO ON TOUR</div>
+                        <div className={styles.ceoName}>{ceoName || 'Mr. Utkarsh Kale (C.E.O.)'}</div>
+                        <div className={styles.contactLine}>Cell: - {cell1} {cell2 ? `/ ${cell2}` : ''}</div>
+                        <div className={styles.contactLine}>Mail ID: - <span style={{ color: '#c62828' }}>{companyEmail}</span></div>
+                        <div className={styles.contactLine}>Website: - <a href={`https://${companyWebsite}`} className={styles.companyLinkInline}>{companyWebsite}</a></div>
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
     );
 });

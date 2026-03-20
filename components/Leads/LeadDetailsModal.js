@@ -36,6 +36,169 @@ export default function LeadDetailsModal({ open, lead, onClose, onEdit, canEdit 
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [downloadingWord, setDownloadingWord] = useState(false);
 
+  const buildPaxLabel = (lead) => {
+    if (Array.isArray(lead?.paxBreakup) && lead.paxBreakup.length > 0) {
+      return lead.paxBreakup
+        .map((item) => [item?.count != null ? item.count : null, item?.type].filter(Boolean).join(' ').trim())
+        .filter(Boolean)
+        .join(', ');
+    }
+    if (lead?.paxCount != null && lead?.paxType) {
+      return `${lead.paxCount} ${lead.paxType}`.trim();
+    }
+    if (lead?.paxCount != null) {
+      return String(lead.paxCount);
+    }
+    return '';
+  };
+
+  const buildTourDuration = (lead) => {
+    return [
+      lead?.tourNights != null && `${lead.tourNights} Nights`,
+      lead?.tourDays != null && `${lead.tourDays} Days`,
+    ].filter(Boolean).join(' / ');
+  };
+
+  const mapLeadToTourPdfData = (lead) => {
+    const images = Array.isArray(lead?.tripImages) ? lead.tripImages.filter(Boolean) : [];
+    const destinations = Array.isArray(lead?.destinations) && lead.destinations.length > 0
+      ? lead.destinations.join(', ')
+      : (lead?.destination || '');
+
+    const getTripImg = (img) => {
+      if (!img) return '';
+      if (img.startsWith('data:') || img.startsWith('http')) return img;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+      const base = apiUrl.replace(/\/api\/?$/, '');
+      return `${base}/uploads/${img.startsWith('/') ? img.slice(1) : img}`;
+    };
+
+    return {
+      perPersonCost: lead?.packageCostPerPerson != null
+        ? String(lead.packageCostPerPerson)
+        : (lead?.total_amount != null ? String(lead.total_amount) : ''),
+      totalPax: buildPaxLabel(lead),
+      vehicleType: lead?.vehicleType || '',
+      hotelCategory: lead?.hotelCategory || '',
+      mealPlan: lead?.mealPlan || '',
+      tourDuration: buildTourDuration(lead),
+      tourDateFrom: lead?.tourStartDate ? new Date(lead.tourStartDate).toLocaleDateString('en-IN') : (lead?.travel_date ? new Date(lead.travel_date).toLocaleDateString('en-IN') : ''),
+      tourDateTo: lead?.tourEndDate ? new Date(lead.tourEndDate).toLocaleDateString('en-IN') : (lead?.travel_date ? new Date(lead.travel_date).toLocaleDateString('en-IN') : ''),
+      pickupPoint: lead?.pickupPoint || '',
+      dropPoint: lead?.dropPoint || '',
+      destinations,
+      heroMain: getTripImg(images[0]),
+      heroSub1: getTripImg(images[1]),
+      heroSub2: getTripImg(images[2]),
+      quoteNumber: lead?.leadId || '',
+      quoteDate: lead?.createdAt ? new Date(lead.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+      hotels: Array.isArray(lead?.accommodation)
+        ? lead.accommodation.map((hotel) => ({
+          name: hotel?.hotelName || '',
+          nights: hotel?.nights != null ? `${hotel.nights} Night${hotel.nights === 1 ? '' : 's'}` : '',
+          roomCategory: hotel?.roomType || '',
+          roomSharing: hotel?.sharing || '',
+          destination: hotel?.destination || '',
+        }))
+        : [],
+      accommodationNote: '',
+      flights: Array.isArray(lead?.flights)
+        ? lead.flights.map((flight) => ({
+          from: flight?.from || '',
+          depDate: '',
+          depTime: '',
+          to: flight?.to || '',
+          arrDate: '',
+          arrTime: '',
+          airline: flight?.airline || '',
+          flightNo: '',
+          pnr: flight?.pnr || '',
+        }))
+        : [],
+      flightNote: '',
+      inclusions: lead?.inclusions || '',
+      exclusions: lead?.exclusions || '',
+      paymentPolicy: lead?.payment_policy || '',
+      cancellationPolicy: lead?.cancellation_policy || '',
+      termsAndConditions: lead?.termsAndConditions || '',
+      memorableTrip: lead?.memorableTrip || '',
+      itinerary: Array.isArray(lead?.itinerary)
+        ? lead.itinerary.map((day, index) => ({
+          dayLabel: `Day ${day?.day != null ? day.day : index + 1}`,
+          date: day?.date ? new Date(day.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) : '',
+          title: day?.route || '',
+          description: day?.description || '',
+          places: Array.isArray(day?.places) ? day.places.filter(Boolean) : [],
+        }))
+        : [],
+      ceoName: 'Mr. Utkarsh Kale (C.E.O.)',
+      cell1: '9960625167',
+      cell2: '9136549898',
+      companyEmail: 'bookings@chaloontour.com',
+      companyWebsite: 'www.chaloontour.com',
+    };
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!lead?._id || downloadingPdf) return;
+    setDownloadingPdf(true);
+    const tid = toast.loading('Generating PDF...');
+    try {
+      const data = mapLeadToTourPdfData(lead);
+      const response = await api.post('/leads/convert-to-pdf', {
+        leadId: lead._id,
+        data,
+        fileName: `Tour-Quotation-${data.quoteNumber || lead._id}`
+      }, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Tour-Quotation-${data.quoteNumber || lead._id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success('PDF Downloaded!', { id: tid });
+    } catch (error) {
+      console.error('Download Error:', error);
+      toast.error('Failed to generate PDF.', { id: tid });
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
+  const handleDownloadWord = async () => {
+    if (!lead?._id || downloadingWord) return;
+    setDownloadingWord(true);
+    const tid = toast.loading('Generating Word Doc...');
+    try {
+      const data = mapLeadToTourPdfData(lead);
+      const response = await api.post('/leads/convert-to-docx', {
+        leadId: lead._id,
+        data,
+        fileName: `Tour-Quotation-${data.quoteNumber || lead._id}`
+      }, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Tour-Quotation-${data.quoteNumber || lead._id}.docx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success('Word Document Downloaded!', { id: tid });
+    } catch (error) {
+      console.error('Word Download Error:', error);
+      toast.error('Failed to generate Word document.', { id: tid });
+    } finally {
+      setDownloadingWord(false);
+    }
+  };
+
   const handleGoToPdfEditor = () => {
     if (!lead?._id) return;
     router.push(`/admin/tour-pdf?leadId=${encodeURIComponent(lead._id)}&preview=1`);
@@ -67,6 +230,14 @@ export default function LeadDetailsModal({ open, lead, onClose, onEdit, canEdit 
             <button type="button" onClick={handleGoToPdfEditor} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm font-medium transition-colors" title="Open Tour PDF/Word Generator">
               <FileText className="h-4 w-4" />
               Generator
+            </button>
+            <button type="button" onClick={handleDownloadPdf} disabled={downloadingPdf} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm font-medium transition-colors disabled:opacity-50" title="Download PDF">
+              <FileDown className="h-4 w-4" />
+              PDF
+            </button>
+            <button type="button" onClick={handleDownloadWord} disabled={downloadingWord} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm font-medium transition-colors disabled:opacity-50" title="Download Word">
+              <FileDown className="h-4 w-4" />
+              Word
             </button>
             {canEdit && (
               <button type="button" onClick={() => onEdit?.(lead)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-white text-sm font-medium transition-colors">
