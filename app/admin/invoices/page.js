@@ -494,29 +494,32 @@ function ReceiptPdfDocument({ invoice }) {
             Thank You For Your Business!
           </div>
 
-          <div style={{ width: '280px' }}>
+          <div style={{ width: '320px' }}>
             {/* Authorised Signatory Section */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', height: '80px', marginBottom: '5px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px', height: '110px', marginBottom: '5px' }}>
               {/* Stamp */}
-              <div style={{ width: '80px', height: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <div style={{ width: '100px', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <img 
                   src="/stamp-sign.png" 
                   alt="Official Stamp" 
-                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', opacity: 0.9 }} 
+                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', filter: 'contrast(1.6)', mixBlendMode: 'multiply' }} 
                   onError={(e) => { e.target.style.display = 'none'; }}
                 />
               </div>
               {/* Signature Side */}
-              <div style={{ width: '110px', height: '80px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <div className="signature-text" style={{ 
-                  fontSize: '20pt', 
-                  color: primaryColor, 
-                  opacity: 0.9, 
-                  transform: 'rotate(-5deg)',
-                  whiteSpace: 'nowrap'
-                }}>
-                  Utkarsh Kale
-                </div>
+              <div style={{ width: '160px', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <img 
+                  src="/signature.png" 
+                  alt="Signature" 
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '100%', 
+                    objectFit: 'contain', 
+                    filter: 'contrast(1.8) brightness(1.1) multiply', // High contrast filter
+                    mixBlendMode: 'multiply' // Blend out off-white scanned background
+                  }} 
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
               </div>
             </div>
             <div style={{ textAlign: 'center' }}>
